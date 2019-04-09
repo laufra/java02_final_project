@@ -5,6 +5,8 @@
  */
 package carDealership;
 
+import java.io.IOException;
+import java.util.Optional;
 import javafx.application.Application;
 import javafx.application.Platform;
 import javafx.event.ActionEvent;
@@ -14,8 +16,9 @@ import javafx.geometry.Pos;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.scene.layout.*;
+import javafx.scene.paint.Color;
 import javafx.stage.Stage;
-import javax.swing.JOptionPane;
+import prog24178.utils.Validator;
 
 /**
  *
@@ -24,21 +27,25 @@ import javax.swing.JOptionPane;
  */
 public class Store extends Application {
 
-    VBox editorPane, inventoryDisplay, addForm, editForm, searchForm, 
+    VBox editorPane, inventoryDisplay, addForm, editForm, searchForm,
             deleteForm;
     BorderPane root;
     HBox bottomArea;
     Button add, edit, delete, showInventory, close, searchButton,
-            backButton, submitAdd, submitEdit;
+            backButton, submitAdd, submitEdit, submitSearch;
     TextArea txtDisplay;
     Label lblTitle, lblYear, lblMake, lblModel, lblVin, lblPrice, lblBc, lblBt,
             lblFt, lblMileage, lblSeats, lblColor, lblSelect;
     TextField txtYear, txtModel, txtVin, txtPrice, txtFt,
             txtMileage, txtSeats, txtColor;
     ComboBox cbMake, cbCondition, cbBT, cbFT;
+    Validator yearValidator = new Validator();
+    Validator priceValidator = new Validator();
+    Validator stringValidator = new Validator();
+    VehicleList vehicleList;
 
     @Override
-    public void start(Stage primaryStage) {
+    public void start(Stage primaryStage) throws IOException {
 
         /**
          * GUI Display areas
@@ -56,10 +63,16 @@ public class Store extends Application {
         delete = new Button("Delete");
         searchButton = new Button("Search");
         showInventory = new Button("Show Inventory");
+
         close = new Button("Close");
         txtDisplay = new TextArea();
-        txtDisplay.setPrefHeight(700);
+        txtDisplay.setPrefHeight(600);
+        txtDisplay.setPrefWidth(300);
+        txtDisplay.setEditable(false);
+        txtDisplay.getStyleClass().add("txtDisplay");
         lblTitle = new Label("Welcome to shitty Car Inventory");
+        lblTitle.getStyleClass().add("lblTitle");
+        lblTitle.setPrefWidth(800);
         lblYear = new Label("Year: ");
         txtYear = new TextField();
         lblMake = new Label("Make: ");
@@ -84,7 +97,9 @@ public class Store extends Application {
         txtColor = new TextField();
         submitAdd = new Button("Submit");
         submitEdit = new Button("Submit");
+        submitSearch = new Button("Submit");
         backButton = new Button("Back");
+        vehicleList = new VehicleList();
 
         /**
          * Creating Array for combo boxes
@@ -104,9 +119,10 @@ public class Store extends Application {
         editorPane.getChildren().addAll(add, edit, delete, searchButton);
         bottomArea.getChildren().addAll(showInventory, close);
         bottomArea.setAlignment(Pos.CENTER);
+        bottomArea.setPadding(new Insets(100));
         inventoryDisplay.getChildren().add(txtDisplay);
         root.setLeft(editorPane);
-        root.setRight(inventoryDisplay);
+        root.setCenter(inventoryDisplay);
         root.setBottom(bottomArea);
         root.setTop(lblTitle);
         lblTitle.setPadding(new Insets(0, 0, 0, 225));
@@ -121,8 +137,8 @@ public class Store extends Application {
         close.setOnAction(e -> Platform.exit());
         delete.setOnAction(e -> eventCode(e));
 
-        Scene scene = new Scene(root, 600, 600);
-
+        Scene scene = new Scene(root, 800, 800);
+        scene.getStylesheets().add("styles.css");
         primaryStage.setTitle("Car inventory");
         primaryStage.setScene(scene);
         primaryStage.show();
@@ -154,19 +170,22 @@ public class Store extends Application {
 
     /**
      * A form to populate a search field for the user to find data
-     * @return 
+     *
+     * @return
      */
     public VBox searchBox() {
         searchForm = new VBox();
         searchForm.getChildren().addAll(lblYear, txtYear, lblMake, cbMake,
-                backButton);
+                submitSearch, backButton);
         searchForm.setAlignment(Pos.CENTER);
+        submitSearch.setOnAction(e -> eventCode(e));
         backButton.setOnAction(e -> eventCode(e));
         return searchForm;
     }
 
     /**
      * A method to generate an edit form when the user presses edit
+     *
      * @return editForm
      */
     public VBox editBox() {
@@ -181,10 +200,10 @@ public class Store extends Application {
         return editForm;
 
     }
-    
-    
+
     /**
      * A method to handle actions performed by the user
+     *
      * @param e event that user performs
      */
     private void eventCode(ActionEvent e) {
@@ -198,26 +217,105 @@ public class Store extends Application {
             root.setLeft(searchBox());
         }
         if (e.getSource() == edit) {
-            int num = Integer.parseInt(JOptionPane.showInputDialog(null,
-                    "Enter a Record Number to edit"));
-            root.setLeft(editBox());
+            TextInputDialog input = new TextInputDialog();
+            input.setTitle("Input Dialog");
+            input.setContentText("Enter Record number to edit");
+
+            Optional<String> record = input.showAndWait();
+            if (record.isPresent()) {
+                if (vehicleList.checkRecord(Integer.parseInt(record.toString()))) {
+                    root.setLeft(editBox());
+                }
+
+            }
+
         }
         if (e.getSource() == delete) {
-            int num = Integer.parseInt(JOptionPane.showInputDialog(null,
-                    "Enter a Record Number to Delete"));
+        }
+        if (e.getSource() == submitSearch) {
+            //TO DO
+
         }
         if (e.getSource() == submitAdd) {
-            //
-        }
-        if (e.getSource() == submitEdit) {
-            //
-        }
+            if (!(isValidInteger(txtYear.getText()))) {
+                txtDisplay.setText("Year invalid");
+                lblYear.setTextFill(Color.RED);
+            } else if (cbMake.getSelectionModel().getSelectedIndex() == -1) {
+                txtDisplay.setText("You must choose the make of the car");
+                lblYear.setTextFill(Color.BLACK);
+                lblMake.setTextFill(Color.RED);
+            } else if (txtModel.getText().equals("")) {
+                txtDisplay.setText("You must input a model");
+                lblModel.setTextFill(Color.RED);
+                lblMake.setTextFill(Color.BLACK);
+            } else if (txtVin.getText().equals("")) {
+                txtDisplay.setText("You must enter the VIN");
+                lblVin.setTextFill(Color.RED);
+                lblModel.setTextFill(Color.BLACK);
+            } else if (!(isValidDouble(txtPrice.getText()))) {
+                txtDisplay.setText("Invalid price");
+                lblPrice.setTextFill(Color.RED);
+                lblVin.setTextFill(Color.BLACK);
+            } else if (cbCondition.getSelectionModel().getSelectedIndex() == -1) {
+                txtDisplay.setText("You must choose a condition");
+                lblBc.setTextFill(Color.RED);
+                lblPrice.setTextFill(Color.BLACK);
+            } else if (cbBT.getSelectionModel().getSelectedIndex() == -1) {
+                txtDisplay.setText("You must select a body type");
+                lblBt.setTextFill(Color.RED);
+                lblBc.setTextFill(Color.BLACK);
+            } else if (!(isValidInteger(txtMileage.getText()))) {
+                txtDisplay.setText("Invalid mileage");
+                lblMileage.setTextFill(Color.RED);
+                lblBt.setTextFill(Color.BLACK);
+            } else if (cbFT.getSelectionModel().getSelectedIndex() == -1) {
+                txtDisplay.setText("You must select a transmission type");
+                lblFt.setTextFill(Color.RED);
+                lblBt.setTextFill(Color.BLACK);
+            } else if (!(isValidInteger(txtSeats.getText()))) {
+                txtDisplay.setText("You must enter the number of seats");
+                lblSeats.setTextFill(Color.RED);
+                lblFt.setTextFill(Color.BLACK);
+            } else if (txtColor.getText().equals("")) {
+                txtDisplay.setText("You must enter the color of the car");
+                lblColor.setTextFill(Color.RED);
+                lblSeats.setTextFill(Color.BLACK);
+            }
+            if (e.getSource() == submitEdit) {
 
+            }
+            if (e.getSource() == showInventory) {
+                //TO Do
+            }
 
+        }
     }
 
+    public boolean isValidInteger(String val) {
+        try {
+            int num = Integer.parseInt(val);
+            return true;
+        } 
+        catch (NumberFormatException e) {
+        }
+        return false;
+    }
+
+    public boolean isValidDouble(String val) {
+        try {
+            double num = Double.parseDouble(val);
+            return true;
+        } catch (NumberFormatException e) {
+        }
+        return false;
+    }
+ 
+    
+
+
+
     public void save() {
-        
+
     }
 
 }
