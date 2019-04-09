@@ -20,6 +20,7 @@ import javax.swing.JOptionPane;
 /**
  *
  * @author Frankie
+ * @author Miguelle
  */
 public class Store extends Application {
 
