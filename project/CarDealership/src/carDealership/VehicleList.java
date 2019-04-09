@@ -49,6 +49,9 @@ public class VehicleList extends ArrayList<Vehicle> {
         RandomAccessFile raf = new RandomAccessFile(file,"rw");
     }
         
+    public boolean checkRecord(int record){
+        return true;
+    }
     
 
 }
