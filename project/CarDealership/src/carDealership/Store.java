@@ -94,7 +94,7 @@ public class Store extends Application {
         cbCondition.getItems().addAll(carCondition);
         BodyType[] carType = BodyType.values();
         cbBT.getItems().addAll(carType);
-        FuelType[] fuelType = FuelType.values();
+        Transmission[] fuelType = Transmission.values();
         cbFT.getItems().addAll(fuelType);
 
         /**

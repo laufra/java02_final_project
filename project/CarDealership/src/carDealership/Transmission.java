@@ -9,14 +9,14 @@ package carDealership;
  *
  * @author Frankie
  */
-public enum FuelType {
+public enum Transmission {
     
     AUTOMATIC("Automatic"),
     MANUAL("Manual");
     
     private String fuelType;
     
-    private FuelType(String fuelType){
+    private Transmission(String fuelType){
         this.fuelType = fuelType;
     }
     

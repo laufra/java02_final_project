@@ -27,7 +27,7 @@ public class Vehicle {
     private BodyCondition condition;
     private BodyType bodyType;
     private int mileage;
-    private FuelType fuelType;
+    private Transmission fuelType;
     private int numOfSeats;
     private String color;
 
@@ -37,7 +37,7 @@ public class Vehicle {
     
     public Vehicle(int year, Make make, String model, String vin,
             double price, BodyCondition condition, BodyType bodyType,
-            int mileage, FuelType fuelType, int numOfSeats, String color) {
+            int mileage, Transmission fuelType, int numOfSeats, String color) {
 
         this.year = year;
         this.make = make;
@@ -124,11 +124,11 @@ public class Vehicle {
         this.model = model;
     }
 
-    public FuelType getFuelType() {
+    public Transmission getFuelType() {
         return fuelType;
     }
 
-    public void setFuelType(FuelType fuelType) {
+    public void setFuelType(Transmission fuelType) {
         this.fuelType = fuelType;
     }
     
