@@ -38,5 +38,9 @@ public enum BodyType {
         return this.bodyType;
     }
     
+    public void setBodyType(String bodyType){
+        this.bodyType = bodyType;
+    }
+    
 
 }

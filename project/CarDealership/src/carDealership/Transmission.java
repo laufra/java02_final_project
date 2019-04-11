@@ -24,6 +24,9 @@ public enum Transmission {
         return fuelType;
     }
     
+    public void setTransmission(String fuel){
+        this.fuelType = fuel;
+    }
     
     
 }

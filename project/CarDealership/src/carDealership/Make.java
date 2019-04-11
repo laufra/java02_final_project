@@ -20,7 +20,7 @@ public enum Make {
 	private String name;
         
         private Make(String name){
-            
+            this.name =name;
         }
 
 	public String getName() {

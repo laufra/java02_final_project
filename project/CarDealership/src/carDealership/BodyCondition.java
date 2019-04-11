@@ -11,7 +11,7 @@ public enum BodyCondition {
         return this.condition;
     }
 
-    public void setCondition() {
+    public void setCondition(String condition) {
         this.condition = condition;
     }
 
