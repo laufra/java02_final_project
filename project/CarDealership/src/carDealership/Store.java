@@ -7,6 +7,8 @@ package carDealership;
 
 import java.io.IOException;
 import java.util.Optional;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javafx.application.Application;
 import javafx.application.Platform;
 import javafx.event.ActionEvent;
@@ -223,7 +225,10 @@ public class Store extends Application {
 
             Optional<String> record = input.showAndWait();
             if (record.isPresent()) {
-                if (vehicleList.checkRecord(Integer.parseInt(record.toString()))) {
+                if (!vehicleList.checkRecord(Integer.parseInt(record.toString()))) {
+                    txtDisplay.setText("Please enter a valid record number");
+                }
+                else{
                     root.setLeft(editBox());
                 }
 
@@ -282,7 +287,7 @@ public class Store extends Application {
                 lblSeats.setTextFill(Color.BLACK);
             }
             if (e.getSource() == submitEdit) {
-
+                
             }
             if (e.getSource() == showInventory) {
                 //TO Do

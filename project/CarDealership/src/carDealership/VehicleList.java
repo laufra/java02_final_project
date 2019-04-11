@@ -19,6 +19,7 @@ import java.io.IOException;
 import java.io.RandomAccessFile;
 import java.util.ArrayList;
 import java.util.Scanner;
+import javafx.collections.FXCollections;
 
 /**
  *
@@ -109,7 +110,12 @@ public class VehicleList extends ArrayList<Vehicle> {
     }
         
     public boolean checkRecord(int record){
-        return true;
+        if (this.contains(record)) {
+            return true;
+        }
+        else{
+            return false;
+        }
     }
     
  public String prepStringField(String value, int size) {

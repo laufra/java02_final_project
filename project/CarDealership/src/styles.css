@@ -1,0 +1,29 @@
+/*
+To change this license header, choose License Headers in Project Properties.
+To change this template file, choose Tools | Templates
+and open the template in the editor.
+*/
+/* 
+    Created on : 9-Apr-2019, 12:24:15 PM
+    Author     : Frankie
+*/
+
+.label{
+    -fx-font-size: 10pt;
+    -fx-text-fill: blue;
+}
+
+.lblTitle{
+    -fx-font: 14pt monospace;
+    -fx-style: italic;
+    -fx-text-fill: red;
+    -fx-border-color: black;
+    -fx-border-width: 2;
+    -fx-border-insets: 20 15 15 15;
+    
+}
+
+.txtDisplay{
+    -fx-border-color: black;
+    -fx-border-width: 2;
+}
