@@ -194,6 +194,8 @@ public class Store extends Application {
         try {
             Validator yearValidator = new Validator(txtYear.getText());
             Validator priceValidator = new Validator(txtPrice.getText());
+            vehicleList = new VehicleList();
+            vehicle = new Vehicle();
             if (e.getSource() == add) {
                 root.setLeft(addForm());
             }
@@ -222,6 +224,7 @@ public class Store extends Application {
 
             }
             if (e.getSource() == delete) {
+                
             }
             if (e.getSource() == submitSearch) {
                 //TO DO
@@ -253,13 +256,11 @@ public class Store extends Application {
                     
                     vehicleList = new VehicleList();
                     vehicle = new Vehicle();
-                    System.out.println("hello\n");
                     vehicle.setYear(Integer.parseInt(txtYear.getText()));
                     vehicle.setMake(Make.valueOf(cbMake.getValue().toString()));
                     vehicle.setModel(txtModel.getText());
                     vehicle.setPrice(Double.parseDouble(txtPrice.getText()));
                     vehicle.setColor(cbColor.getValue().toString());
-                    System.out.println("dog");
                     int vehYear = vehicle.getYear();
                     Make vehMake = vehicle.getMake();
                     String vehModel = vehicle.getModel();
@@ -268,6 +269,7 @@ public class Store extends Application {
                     Vehicle veh = new Vehicle(vehYear,vehMake,vehModel,vehPrice, vehColor);
                     vehicleList.add(veh);
                     vehicleList.writeRecord(vehicle);
+                    
                     txtDisplay.setText("Entry Saved");
                 }
             }
@@ -293,14 +295,15 @@ public class Store extends Application {
                         vehModel, vehPrice, vehColor));
 
                 vehicleList.writeRecord(vehicle);
+                
                 txtDisplay.setText("Entry Saved");
             }
             if (e.getSource() == showInventory) {
-                vehicleList = new VehicleList();
-                txtDisplay.setText(vehicleList.prepStringField("Year", 
-                        VehicleList.field_size)
-                        + "\tMake" + "\tModel" +"\tPrice"+"\tColor");
+                
+                txtDisplay.setText("Year\t" 
+                        + "\tMake" + "\tModel" + "\tPrice" + "\t\tColor");
                 txtDisplay.appendText("\n---------------------------------------------");
+                
                 txtDisplay.appendText(vehicleList.readFile());
             }
         } catch (Exception ex) {
@@ -308,24 +311,7 @@ public class Store extends Application {
         }
     }
 
-    public boolean isValidInteger(String val) {
-        try {
-            int num = Integer.parseInt(val);
-            return true;
-        } catch (NumberFormatException e) {
-        }
-        return false;
-    }
-
-    public boolean isValidDouble(String val) {
-        try {
-            double num = Double.parseDouble(val);
-            return true;
-        } catch (NumberFormatException e) {
-        }
-        return false;
-    }
-
+    
     public void save() {
 
     }

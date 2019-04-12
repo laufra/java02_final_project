@@ -29,14 +29,14 @@ public class VehicleList extends ArrayList<Vehicle> {
 
     private Scanner input;
     private Vehicle vehicle;
-    private RandomAccessFile random;
     File file;
-    public static final int field_size = 30;
-    public static final int RECORD_SIZE = 128;
+    public static final int field_size = 20;
+    //int String string double string
+    public static final int RECORD_SIZE = 132;
 
     public VehicleList() throws FileNotFoundException, IOException {
         file = new File("vehicle.txt");
-        random = new RandomAccessFile(file, "rw");
+        RandomAccessFile random = new RandomAccessFile(file, "rw");
         if (!file.exists()) {
             file.createNewFile();
         }
@@ -48,7 +48,7 @@ public class VehicleList extends ArrayList<Vehicle> {
     public String readString(RandomAccessFile random, int size) throws java.io.IOException {
         String n = "";
         for (int i = 0; i < size; i++) {
-            n += String.valueOf(random.readChar());
+            n += random.readChar();
         }
         return n;
     }
@@ -67,18 +67,19 @@ public class VehicleList extends ArrayList<Vehicle> {
 
     public String readFile() throws FileNotFoundException, IOException {
         String rs = "";
-
+        file = new File("vehicle.txt");
         try {
-            long recNum = random.length() / RECORD_SIZE;
+            RandomAccessFile random = new RandomAccessFile(file, "rw");
             random.seek(0);
-            for (int i = 0; i < recNum; i++) {
-                rs += String.format("\n%8d%7s%7s%12f%8s", random.readInt(),
+            while (random.getFilePointer() < random.length()) {
+
+                rs += String.format("%n%4d%30s%13s%7.2f%30s%n", random.readInt(),
                         readString(random, field_size),
                         readString(random, field_size), random.readDouble(),
                         readString(random, field_size));
 
             }
-            System.out.println(rs);
+
 
         } catch (IOException ex) {
             ex.getMessage();
@@ -88,14 +89,16 @@ public class VehicleList extends ArrayList<Vehicle> {
 
     public void writeRecord(Vehicle newItem) throws FileNotFoundException, IOException {
         try {
+            file = new File("vehicle.txt");
+            RandomAccessFile random = new RandomAccessFile(file, "rw");
             long fileSize = random.length();
             random.seek(fileSize);
             random.writeInt(newItem.getYear());
-            random.writeChars(newItem.getMake().getName());
-            random.writeChars(newItem.getModel());
+            random.writeChars(prepStringField(newItem.getMake().getName(),field_size));
+            random.writeChars(prepStringField(newItem.getModel(),field_size));
             random.writeDouble(newItem.getPrice());
-            random.writeChars(newItem.getColor());
-            random.close();
+            random.writeChars(prepStringField(newItem.getColor(),field_size));
+            
         } catch (IOException ex) {
             ex.getMessage();
         }
