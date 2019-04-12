@@ -35,7 +35,7 @@ public class VehicleList extends ArrayList<Vehicle> {
     public static final int RECORD_SIZE = 128;
 
     public VehicleList() throws FileNotFoundException, IOException {
-        file = new File("vehicle.dat");
+        file = new File("vehicle.txt");
         random = new RandomAccessFile(file, "rw");
         if (!file.exists()) {
             file.createNewFile();
