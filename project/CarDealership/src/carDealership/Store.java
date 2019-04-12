@@ -36,15 +36,15 @@ public class Store extends Application {
     Button add, edit, delete, showInventory, close, searchButton,
             backButton, submitAdd, submitEdit, submitSearch;
     TextArea txtDisplay;
-    Label lblTitle, lblYear, lblMake, lblModel, lblVin, lblPrice, lblBc, lblBt,
-            lblFt, lblMileage, lblSeats, lblColor, lblSelect;
-    TextField txtYear, txtModel, txtVin, txtPrice, txtFt,
-            txtMileage, txtSeats, txtColor;
-    ComboBox cbMake, cbCondition, cbBT, cbFT;
+    Label lblTitle, lblYear, lblMake, lblModel, lblPrice, lblColor, lblSelect;
+    TextField txtYear, txtModel, txtPrice, txtColor;
+    ComboBox cbMake,cbColor;
     Validator yearValidator = new Validator();
     Validator priceValidator = new Validator();
     Validator stringValidator = new Validator();
     VehicleList vehicleList;
+    Vehicle vehicle;
+    int indexNum;
 
     @Override
     public void start(Stage primaryStage) throws IOException {
@@ -81,22 +81,10 @@ public class Store extends Application {
         cbMake = new ComboBox();
         lblModel = new Label("Model: ");
         txtModel = new TextField();
-        lblVin = new Label("VIN: ");
-        txtVin = new TextField();
         lblPrice = new Label("Price: ");
         txtPrice = new TextField();
-        lblBc = new Label("Body Condition: ");
-        cbCondition = new ComboBox();
-        lblBt = new Label("Body Type: ");
-        cbBT = new ComboBox();
-        lblMileage = new Label("Mileage: ");
-        txtMileage = new TextField();
-        lblFt = new Label("Fuel Type: ");
-        cbFT = new ComboBox();
-        lblSeats = new Label("Number of Seats: ");
-        txtSeats = new TextField();
         lblColor = new Label("Color: ");
-        txtColor = new TextField();
+        cbColor = new ComboBox();
         submitAdd = new Button("Submit");
         submitEdit = new Button("Submit");
         submitSearch = new Button("Submit");
@@ -108,13 +96,8 @@ public class Store extends Application {
          */
         Make[] carMake = Make.values();
         cbMake.getItems().addAll(carMake);
-        BodyCondition[] carCondition = BodyCondition.values();
-        cbCondition.getItems().addAll(carCondition);
-        BodyType[] carType = BodyType.values();
-        cbBT.getItems().addAll(carType);
-        Transmission[] fuelType = Transmission.values();
-        cbFT.getItems().addAll(fuelType);
-
+        String[] colors = {"Red","Blue","White","Gray","Silver"};
+        cbColor.getItems().addAll(colors);
         /**
          * Assigning nodes to their boxes or panes
          */
@@ -138,6 +121,8 @@ public class Store extends Application {
         edit.setOnAction(e -> eventCode(e));
         close.setOnAction(e -> Platform.exit());
         delete.setOnAction(e -> eventCode(e));
+        showInventory.setOnAction(e -> eventCode(e));
+        
 
         Scene scene = new Scene(root, 800, 800);
         scene.getStylesheets().add("styles.css");
@@ -157,13 +142,12 @@ public class Store extends Application {
         addForm = new VBox();
 
         addForm.getChildren().addAll(lblYear, txtYear, lblMake, cbMake, lblModel,
-                txtModel, lblVin, txtVin, lblPrice, txtPrice, lblBc,
-                cbCondition, lblBt, cbBT, lblMileage, txtMileage, lblFt, cbFT,
-                lblSeats, txtSeats, lblColor, txtColor, submitAdd,
+                txtModel, lblPrice, txtPrice, lblColor, cbColor, submitAdd,
                 backButton);
 
         addForm.setAlignment(Pos.CENTER);
-
+        
+        submitAdd.setOnAction(e -> eventCode(e));
         backButton.setOnAction(e -> eventCode(e));
 
         return addForm;
@@ -193,9 +177,7 @@ public class Store extends Application {
     public VBox editBox() {
         editForm = new VBox();
         editForm.getChildren().addAll(lblYear, txtYear, lblMake, cbMake, lblModel,
-                txtModel, lblVin, txtVin, lblPrice, txtPrice, lblBc,
-                cbCondition, lblBt, cbBT, lblMileage, txtMileage, lblFt, cbFT,
-                lblSeats, txtSeats, lblColor, txtColor, submitEdit,
+                txtModel, lblPrice, txtPrice, lblColor, cbColor, submitEdit,
                 backButton);
         editForm.setAlignment(Pos.CENTER);
         backButton.setOnAction(e -> eventCode(e));
@@ -209,90 +191,120 @@ public class Store extends Application {
      * @param e event that user performs
      */
     private void eventCode(ActionEvent e) {
-        if (e.getSource() == add) {
-            root.setLeft(addForm());
-        }
-        if (e.getSource() == backButton) {
-            root.setLeft(editorPane);
-        }
-        if (e.getSource() == searchButton) {
-            root.setLeft(searchBox());
-        }
-        if (e.getSource() == edit) {
-            TextInputDialog input = new TextInputDialog();
-            input.setTitle("Input Dialog");
-            input.setContentText("Enter Record number to edit");
+        try {
+            Validator yearValidator = new Validator(txtYear.getText());
+            Validator priceValidator = new Validator(txtPrice.getText());
+            if (e.getSource() == add) {
+                root.setLeft(addForm());
+            }
+            if (e.getSource() == backButton) {
+                root.setLeft(editorPane);
+            }
+            if (e.getSource() == searchButton) {
+                root.setLeft(searchBox());
+            }
+            if (e.getSource() == edit) {
+                TextInputDialog input = new TextInputDialog();
+                input.setTitle("Input Dialog");
+                input.setContentText("Enter Record number to edit");
 
-            Optional<String> record = input.showAndWait();
-            if (record.isPresent()) {
-                if (!vehicleList.checkRecord(Integer.parseInt(record.toString()))) {
-                    txtDisplay.setText("Please enter a valid record number");
-                }
-                else{
-                    root.setLeft(editBox());
+                Optional<String> record = input.showAndWait();
+                indexNum = Integer.parseInt(record.toString());
+
+                if (record.isPresent()) {
+                    if (!vehicleList.checkRecord(Integer.parseInt(record.toString()))) {
+                        txtDisplay.setText("Please enter a valid record number");
+                    } else {
+                        root.setLeft(editBox());
+                    }
+
                 }
 
             }
+            if (e.getSource() == delete) {
+            }
+            if (e.getSource() == submitSearch) {
+                //TO DO
 
-        }
-        if (e.getSource() == delete) {
-        }
-        if (e.getSource() == submitSearch) {
-            //TO DO
-
-        }
-        if (e.getSource() == submitAdd) {
-            if (!(isValidInteger(txtYear.getText()))) {
-                txtDisplay.setText("Year invalid");
-                lblYear.setTextFill(Color.RED);
-            } else if (cbMake.getSelectionModel().getSelectedIndex() == -1) {
-                txtDisplay.setText("You must choose the make of the car");
-                lblYear.setTextFill(Color.BLACK);
-                lblMake.setTextFill(Color.RED);
-            } else if (txtModel.getText().equals("")) {
-                txtDisplay.setText("You must input a model");
-                lblModel.setTextFill(Color.RED);
-                lblMake.setTextFill(Color.BLACK);
-            } else if (txtVin.getText().equals("")) {
-                txtDisplay.setText("You must enter the VIN");
-                lblVin.setTextFill(Color.RED);
-                lblModel.setTextFill(Color.BLACK);
-            } else if (!(isValidDouble(txtPrice.getText()))) {
-                txtDisplay.setText("Invalid price");
-                lblPrice.setTextFill(Color.RED);
-                lblVin.setTextFill(Color.BLACK);
-            } else if (cbCondition.getSelectionModel().getSelectedIndex() == -1) {
-                txtDisplay.setText("You must choose a condition");
-                lblBc.setTextFill(Color.RED);
-                lblPrice.setTextFill(Color.BLACK);
-            } else if (cbBT.getSelectionModel().getSelectedIndex() == -1) {
-                txtDisplay.setText("You must select a body type");
-                lblBt.setTextFill(Color.RED);
-                lblBc.setTextFill(Color.BLACK);
-            } else if (!(isValidInteger(txtMileage.getText()))) {
-                txtDisplay.setText("Invalid mileage");
-                lblMileage.setTextFill(Color.RED);
-                lblBt.setTextFill(Color.BLACK);
-            } else if (cbFT.getSelectionModel().getSelectedIndex() == -1) {
-                txtDisplay.setText("You must select a transmission type");
-                lblFt.setTextFill(Color.RED);
-                lblBt.setTextFill(Color.BLACK);
-            } else if (!(isValidInteger(txtSeats.getText()))) {
-                txtDisplay.setText("You must enter the number of seats");
-                lblSeats.setTextFill(Color.RED);
-                lblFt.setTextFill(Color.BLACK);
-            } else if (txtColor.getText().equals("")) {
-                txtDisplay.setText("You must enter the color of the car");
-                lblColor.setTextFill(Color.RED);
-                lblSeats.setTextFill(Color.BLACK);
+            }
+            if (e.getSource() == submitAdd) {
+                if (!yearValidator.isValidInteger()) {
+                    txtDisplay.setText("Year invalid");
+                    lblYear.setTextFill(Color.RED);
+                } else if (cbMake.getSelectionModel().getSelectedIndex() == -1) {
+                    txtDisplay.setText("You must choose the make of the car");
+                    lblYear.setTextFill(Color.BLACK);
+                    lblMake.setTextFill(Color.RED);
+                } else if (txtModel.getText().equals("")) {
+                    txtDisplay.setText("You must input a model");
+                    lblModel.setTextFill(Color.RED);
+                    lblMake.setTextFill(Color.BLACK);
+                } else if (!priceValidator.isValidDouble()) {
+                    lblModel.setTextFill(Color.BLACK);
+                    txtDisplay.setText("Invalid price");
+                    lblPrice.setTextFill(Color.RED);
+                } else if (cbColor.getSelectionModel().getSelectedIndex() == -1)
+                {
+                    lblPrice.setTextFill(Color.BLACK);
+                    txtDisplay.setText("Must input a color");
+                    lblColor.setTextFill(Color.RED);
+                }  
+                else {
+                    
+                    vehicleList = new VehicleList();
+                    vehicle = new Vehicle();
+                    System.out.println("hello\n");
+                    vehicle.setYear(Integer.parseInt(txtYear.getText()));
+                    vehicle.setMake(Make.valueOf(cbMake.getValue().toString()));
+                    vehicle.setModel(txtModel.getText());
+                    vehicle.setPrice(Double.parseDouble(txtPrice.getText()));
+                    vehicle.setColor(cbColor.getValue().toString());
+                    System.out.println("dog");
+                    int vehYear = vehicle.getYear();
+                    Make vehMake = vehicle.getMake();
+                    String vehModel = vehicle.getModel();
+                    double vehPrice = vehicle.getPrice();
+                    String vehColor = vehicle.getColor();
+                    Vehicle veh = new Vehicle(vehYear,vehMake,vehModel,vehPrice, vehColor);
+                    vehicleList.add(veh);
+                    vehicleList.writeRecord(vehicle);
+                    txtDisplay.setText("Entry Saved");
+                }
             }
             if (e.getSource() == submitEdit) {
-                
+                 txtYear.setText(Integer.
+                        toString(vehicleList.get(indexNum).getYear()));
+                txtModel.setText(vehicleList.get(indexNum).getModel());
+                txtPrice.setText(Double.toString(vehicleList.
+                        get(indexNum).getPrice()));
+
+                vehicle.setYear(Integer.parseInt(txtYear.getText()));
+                vehicle.setMake(Make.valueOf(cbMake.getValue().toString()));
+                vehicle.setModel(txtModel.getText());
+                vehicle.setPrice(Double.parseDouble(txtPrice.getText()));
+                vehicle.setColor(txtColor.getText());
+
+                int vehYear = vehicle.getYear();
+                Make vehMake = vehicle.getMake();
+                String vehModel = vehicle.getModel();
+                double vehPrice = vehicle.getPrice();
+                String vehColor = vehicle.getColor();
+                vehicleList.set(indexNum, new Vehicle(vehYear, vehMake,
+                        vehModel, vehPrice, vehColor));
+
+                vehicleList.writeRecord(vehicle);
+                txtDisplay.setText("Entry Saved");
             }
             if (e.getSource() == showInventory) {
-                //TO Do
+                vehicleList = new VehicleList();
+                txtDisplay.setText(vehicleList.prepStringField("Year", 
+                        VehicleList.field_size)
+                        + "\tMake" + "\tModel" +"\tPrice"+"\tColor");
+                txtDisplay.appendText("\n---------------------------------------------");
+                txtDisplay.appendText(vehicleList.readFile());
             }
-
+        } catch (Exception ex) {
+            ex.getMessage();
         }
     }
 
@@ -300,8 +312,7 @@ public class Store extends Application {
         try {
             int num = Integer.parseInt(val);
             return true;
-        } 
-        catch (NumberFormatException e) {
+        } catch (NumberFormatException e) {
         }
         return false;
     }
@@ -314,10 +325,6 @@ public class Store extends Application {
         }
         return false;
     }
- 
-    
-
-
 
     public void save() {
 

@@ -18,50 +18,27 @@ package carDealership;
  * @author Frankie
  */
 public class Vehicle {
+    
 
+    
     private int year;
     private Make make;
     private String model;
-    private String vin;
     private double price;
-    private BodyCondition condition;
-    private BodyType bodyType;
-    private int mileage;
-    private Transmission fuelType;
-    private int numOfSeats;
     private String color;
 
-    public Vehicle(){
-        
-    }
-    
-    public Vehicle(int year, Make make, String model, String vin,
-            double price, BodyCondition condition, BodyType bodyType,
-            int mileage, Transmission fuelType, int numOfSeats, String color) {
+    public Vehicle() {
 
+    }
+
+    public Vehicle(int year, Make make, String model, double price,
+            String color) {
+        
         this.year = year;
         this.make = make;
         this.model = model;
-        this.vin = vin;
         this.price = price;
-        this.condition = condition;
-        this.bodyType = bodyType;
-        this.mileage = mileage;
-        this.fuelType = fuelType;
-        this.numOfSeats = numOfSeats;
         this.color = color;
-    }
-
-    public String getVin() {
-        return this.vin;
-    }
-
-    /**
-     *
-     * @param vin
-     */
-    public void setVin(String vin) {
-        this.vin = vin;
     }
 
     public double getPrice() {
@@ -80,10 +57,6 @@ public class Vehicle {
         return this.color;
     }
 
-    /**
-     *
-     * @param color
-     */
     public void setColor(String color) {
         this.color = color;
     }
@@ -92,10 +65,6 @@ public class Vehicle {
         return this.year;
     }
 
-    /**
-     *
-     * @param year
-     */
     public void setYear(int year) {
         this.year = year;
     }
@@ -103,11 +72,6 @@ public class Vehicle {
     public Make getMake() {
         return this.make;
     }
-
-    /**
-     *
-     * @param make
-     */
     public void setMake(Make make) {
         this.make = make;
     }
@@ -115,67 +79,17 @@ public class Vehicle {
     public String getModel() {
         return this.model;
     }
-
-    /**
-     *
-     * @param model
-     */
     public void setModel(String model) {
         this.model = model;
     }
 
-    public Transmission getFuelType() {
-        return fuelType;
+    @Override
+    public String toString() {
+        return "Vehicle{" + "year=" + year + ", make=" + make + ", model=" + model + ", price=" + price + ", color=" + color + '}';
     }
 
-    public void setFuelType(Transmission fuelType) {
-        this.fuelType = fuelType;
-    }
+   
     
-  
-
-    public int getNumOfSeats() {
-        return this.numOfSeats;
-    }
-
-    /**
-     *
-     * @param numOfSeats
-     */
-    public void setNumOfSeats(int numOfSeats) {
-        this.numOfSeats = numOfSeats;
-    }
-
-    public int getMileage() {
-        return this.mileage;
-    }
-
-    /**
-     *
-     * @param mileage
-     */
-    public void setMileage(int mileage) {
-        this.mileage = mileage;
-    }
-
-    public BodyCondition getCondition() {
-        return this.condition;
-    }
-
-    /**
-     *
-     * @param condition
-     */
-    public void setCondition(BodyCondition condition) {
-        this.condition = condition;
-    }
-
-    public BodyType getBodyType() {
-        return bodyType;
-    }
-
-    public void setBodyType(BodyType bodyType) {
-        this.bodyType = bodyType;
-    }
+    
 
 }

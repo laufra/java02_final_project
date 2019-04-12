@@ -27,98 +27,33 @@ import javafx.collections.FXCollections;
  */
 public class VehicleList extends ArrayList<Vehicle> {
 
-    private File file;
     private Scanner input;
     private Vehicle vehicle;
     private RandomAccessFile random;
-    
-    Make maker;
-    BodyCondition body;
-    BodyType bodtype;
-    Transmission trans;
-    
-    public VehicleList() throws FileNotFoundException, IOException{
+    File file;
+    public static final int field_size = 30;
+    public static final int RECORD_SIZE = 128;
+
+    public VehicleList() throws FileNotFoundException, IOException {
         file = new File("vehicle.dat");
-        if(!file.exists()){
+        random = new RandomAccessFile(file, "rw");
+        if (!file.exists()) {
             file.createNewFile();
         }
         input = new Scanner(file);
         vehicle = new Vehicle();
-    }
-    
-    public String readFile() throws FileNotFoundException{
-     
-        return "";
-    }
-    
-    public void writeRecord(Vehicle newItem) throws FileNotFoundException, IOException{
-    
-         random = new RandomAccessFile(file,"rw");
-         int field_size = 50;
-        
-        random = new RandomAccessFile(file,"rw");
-        random.seek(random.length());
-        
-        int year=0;
-        random.writeInt(year);
-        
-        String make = "";
-        make = prepStringField(make,field_size);
-        random.writeChars(make);
-        maker.setName(make);
-        
-        
-        String model ="";
-        model = prepStringField(model, field_size);
-        random.writeChars(model);
-        
-        String vin = "";
-        vin = prepStringField(vin,field_size);
-        random.writeChars(vin);
-        
-        double price =0.0;
-        random.writeDouble(price);
-        
-        String condition ="";
-        condition = prepStringField(condition, field_size);
-        random.writeChars(condition);
-        body.setCondition(condition);
-        
-        String type ="";
-        type = prepStringField(type, field_size);
-        random.writeChars(type);
-        bodtype.setBodyType(type);
-        
-        int miles = 0;
-        random.writeInt(miles);
-        
-        String fuel ="";
-        fuel = prepStringField(fuel, field_size);
-        random.writeChars(fuel);
-        trans.setTransmission(fuel);
-        
-        int seat =0;
-        random.writeInt(seat);
-        
-        String colour = "";
-        colour = prepStringField(colour,field_size);
-        random.writeChars(colour);
-        
-        
-        newItem = new Vehicle(year, maker, model, vin, price, body, bodtype, miles, trans, seat, colour);
 
     }
-        
-    public boolean checkRecord(int record){
-        if (this.contains(record)) {
-            return true;
+
+    public String readString(RandomAccessFile random, int size) throws java.io.IOException {
+        String n = "";
+        for (int i = 0; i < size; i++) {
+            n += String.valueOf(random.readChar());
         }
-        else{
-            return false;
-        }
+        return n;
     }
-    
- public String prepStringField(String value, int size) {
+
+    public String prepStringField(String value, int size) {
         if (value.length() < size) {
             int numSpaces = size - value.length();
             for (int i = 1; i <= numSpaces; i++) {
@@ -128,5 +63,49 @@ public class VehicleList extends ArrayList<Vehicle> {
             value = value.substring(0, size);
         }
         return value;
+    }
+
+    public String readFile() throws FileNotFoundException, IOException {
+        String rs = "";
+
+        try {
+            long recNum = random.length() / RECORD_SIZE;
+            random.seek(0);
+            for (int i = 0; i < recNum; i++) {
+                rs += String.format("\n%8d%7s%7s%12f%8s", random.readInt(),
+                        readString(random, field_size),
+                        readString(random, field_size), random.readDouble(),
+                        readString(random, field_size));
+
+            }
+            System.out.println(rs);
+
+        } catch (IOException ex) {
+            ex.getMessage();
+        }
+        return rs;
+    }
+
+    public void writeRecord(Vehicle newItem) throws FileNotFoundException, IOException {
+        try {
+            long fileSize = random.length();
+            random.seek(fileSize);
+            random.writeInt(newItem.getYear());
+            random.writeChars(newItem.getMake().getName());
+            random.writeChars(newItem.getModel());
+            random.writeDouble(newItem.getPrice());
+            random.writeChars(newItem.getColor());
+            random.close();
+        } catch (IOException ex) {
+            ex.getMessage();
+        }
+    }
+
+    public boolean checkRecord(int num) {
+        if (num == this.indexOf(vehicle)) {
+            return true;
+        } else {
+            return false;
+        }
     }
 }
