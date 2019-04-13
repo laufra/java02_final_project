@@ -44,7 +44,7 @@ public class Store extends Application {
     Validator stringValidator = new Validator();
     VehicleList vehicleList;
     Vehicle vehicle;
-    int indexNum;
+ 
 
     @Override
     public void start(Stage primaryStage) throws IOException {
@@ -196,6 +196,7 @@ public class Store extends Application {
             Validator priceValidator = new Validator(txtPrice.getText());
             vehicleList = new VehicleList();
             vehicle = new Vehicle();
+            int indexNum;
             if (e.getSource() == add) {
                 root.setLeft(addForm());
             }
@@ -213,8 +214,8 @@ public class Store extends Application {
                 Optional<String> record = input.showAndWait();
                 indexNum = Integer.parseInt(record.toString());
 
-                if (record.isPresent()) {
-                    if (!vehicleList.checkRecord(Integer.parseInt(record.toString()))) {
+                if (record.isPresent()){ {
+                    if (!vehicleList.checkRecord(indexNum)) {
                         txtDisplay.setText("Please enter a valid record number");
                     } else {
                         root.setLeft(editBox());
@@ -223,7 +224,21 @@ public class Store extends Application {
                 }
 
             }
+            }
             if (e.getSource() == delete) {
+                TextInputDialog input = new TextInputDialog();
+                input.setTitle("Input Dialog");
+                input.setContentText("Enter Record number to delete");
+
+                Optional<String> record = input.showAndWait();
+      
+                if (record.isPresent()) {
+                    indexNum = Integer.parseInt(record.get());
+                    vehicleList.deleteRecord(indexNum);
+                    
+                    
+                    
+                }
                 
             }
             if (e.getSource() == submitSearch) {
@@ -301,8 +316,9 @@ public class Store extends Application {
             if (e.getSource() == showInventory) {
                 
                 txtDisplay.setText("Year\t" 
-                        + "\tMake" + "\tModel" + "\tPrice" + "\t\tColor");
-                txtDisplay.appendText("\n---------------------------------------------");
+                        + "\tMake" + "\t\tModel" + "\t\tPrice" + "\t\t\tColor");
+                txtDisplay.appendText("\n-------------------------------------"
+                        + "--------------------------------------------------");
                 
                 txtDisplay.appendText(vehicleList.readFile());
             }

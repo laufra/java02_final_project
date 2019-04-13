@@ -73,7 +73,7 @@ public class VehicleList extends ArrayList<Vehicle> {
             random.seek(0);
             while (random.getFilePointer() < random.length()) {
 
-                rs += String.format("%n%4d%30s%13s%7.2f%30s%n", random.readInt(),
+                rs += String.format("%n%4d%28s%15s%3.2f%30s%n", random.readInt(),
                         readString(random, field_size),
                         readString(random, field_size), random.readDouble(),
                         readString(random, field_size));
@@ -103,12 +103,15 @@ public class VehicleList extends ArrayList<Vehicle> {
             ex.getMessage();
         }
     }
-
-    public boolean checkRecord(int num) {
-        if (num == this.indexOf(vehicle)) {
-            return true;
-        } else {
-            return false;
-        }
+    
+    public void deleteRecord(int num) throws FileNotFoundException, IOException{
+        file = new File("vehicle.txt");
+        RandomAccessFile random = new RandomAccessFile(file,"rw");
+        long fileSize = RECORD_SIZE *(num - 1);
+        random.seek(fileSize);
+        random.setLength();
+        
     }
+
+
 }
