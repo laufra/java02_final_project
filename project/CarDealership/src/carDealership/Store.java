@@ -47,6 +47,7 @@ public class Store extends Application {
     Validator stringValidator = new Validator();
     VehicleList vehicleList;
     Vehicle vehicle;
+    int recNum;
 
     @Override
     public void start(Stage primaryStage) throws IOException {
@@ -199,7 +200,6 @@ public class Store extends Application {
             Validator priceValidator = new Validator(txtPrice.getText());
             vehicleList = new VehicleList();
             vehicle = new Vehicle();
-            int indexNum;
             if (e.getSource() == add) {
                 root.setLeft(addForm());
             }
@@ -207,7 +207,37 @@ public class Store extends Application {
                 root.setLeft(editorPane);
             }
             if (e.getSource() == searchButton) {
-                root.setLeft(searchBox());
+
+                TextInputDialog input = new TextInputDialog();
+                input.setTitle("Input Dialog");
+                input.setHeaderText(null);
+                input.setContentText("Enter a record number:");
+
+                Optional<String> result = input.showAndWait();
+                if (result.isPresent() && vehicleList.checkRecord(Integer.parseInt(result.get()))) {
+                    //cbMake.getValue().toString();
+
+                    if (vehicleList.checkRecord(Integer.parseInt(result.get()))) {
+
+                        String filego = "vehicle.txt";
+                        File file1 = new File(filego);
+                        RandomAccessFile rand = new RandomAccessFile(file1, "rw");
+
+                        int recNum = Integer.parseInt(result.get());
+
+                        if (recNum >= 0 && recNum < rand.length() / VehicleList.RECORD_SIZE) {
+                            rand.seek(VehicleList.RECORD_SIZE * recNum);
+
+                            txtDisplay.setText("Year\t"
+                                    + "\tMake" + "\t\tModel" + "\t\tPrice" + "\t\t\tColor");
+                            txtDisplay.appendText("\n-------------------------------------"
+                                    + "--------------------------------------------------\n");
+
+                            txtDisplay.appendText(vehicleList.readFileIndex(recNum));
+                        }
+                    }
+                }
+
             }
             if (e.getSource() == edit) {
                 TextInputDialog input = new TextInputDialog();
@@ -220,24 +250,44 @@ public class Store extends Application {
                     root.setLeft(editBox());
                     String filePath = "vehicle.txt";
                     File file = new File(filePath);
-                    RandomAccessFile random = new RandomAccessFile(file,"rw");
-                    int recNum = Integer.parseInt(result.get());
+                    RandomAccessFile random = new RandomAccessFile(file, "rw");
+                    recNum = Integer.parseInt(result.get());
                     if (recNum >= 0 && recNum < random.length() / VehicleList.RECORD_SIZE) {
-                    random.seek(VehicleList.RECORD_SIZE * recNum);
-                    txtYear.setText(Integer.toString(random.readInt()));
-                    cbMake.setValue(vehicleList.readString(random, VehicleList.field_size));
-                    txtModel.setText(vehicleList.readString(random, VehicleList.field_size));
-                    txtPrice.setText(Double.toString(random.readDouble()));
-                    cbColor.setValue(vehicleList.readString(random, VehicleList.field_size));
-                } 
+                        random.seek(VehicleList.RECORD_SIZE * recNum);
+                        txtYear.setText(Integer.toString(random.readInt()));
+                        cbMake.setValue(vehicleList.readString(random, VehicleList.field_size));
+                        txtModel.setText(vehicleList.readString(random, VehicleList.field_size));
+                        txtPrice.setText(Double.toString(random.readDouble()));
+                        cbColor.setValue(vehicleList.readString(random, VehicleList.field_size));
+                    }
+
                 }
-                
 
             }
 
             if (e.getSource() == submitEdit) {
 
+                Vehicle newVehicle = new Vehicle();
+                newVehicle.setYear(Integer.parseInt(txtYear.getText()));
+
+                newVehicle.setMake(Make.valueOf(cbMake.getValue().toString()));
+
+                newVehicle.setModel(txtModel.getText());
+
+                newVehicle.setPrice(Double.parseDouble(txtPrice.getText()));
+
+                newVehicle.setColor(cbColor.getValue().toString());
+
+                int vehYear = newVehicle.getYear();
+                Make vehMake = newVehicle.getMake();
+                String vehModel = newVehicle.getModel();
+                double vehPrice = newVehicle.getPrice();
+                String vehColor = newVehicle.getColor();
+
+                txtDisplay.setText("Entry saved");
+
             }
+
             if (e.getSource() == delete) {
                 Alert alert = new Alert(Alert.AlertType.CONFIRMATION,
                         "Are you sure you wish to delete last entry?",
@@ -248,10 +298,6 @@ public class Store extends Application {
                 if (result.get() == ButtonType.YES) {
                     vehicleList.deleteRecord();
                 }
-
-            }
-            if (e.getSource() == submitSearch) {
-                //TO DO
 
             }
             if (e.getSource() == submitAdd) {

@@ -52,14 +52,12 @@ public class VehicleList extends ArrayList<Vehicle> {
 
     }
 
-    
-
     public void deleteRecord() throws FileNotFoundException, IOException {
         filePath = "vehicle.txt";
         file = new File(filePath);
         try {
             RandomAccessFile random = new RandomAccessFile(file, "rw");
-            random.seek(random.length() - 132 );
+            random.seek(random.length() - 132);
             random.setLength(random.getFilePointer());
 
         } catch (IOException ex) {
@@ -67,8 +65,7 @@ public class VehicleList extends ArrayList<Vehicle> {
         }
 
     }
-    
-    
+
     public String readString(RandomAccessFile random, int size) throws java.io.IOException {
         String n = "";
         for (int i = 0; i < size; i++) {
@@ -93,26 +90,6 @@ public class VehicleList extends ArrayList<Vehicle> {
         String rs = "";
         filePath = "vehicle.txt";
         file = new File(filePath);
-        copyPath = "copy.txt";
-        File copy = new File(copyPath, "rw");
-        if (copy.exists()) {
-            try {
-                RandomAccessFile random = new RandomAccessFile(copy, "rw");
-                random.seek(0);
-                while (random.getFilePointer() < random.length()) {
-
-                    rs += String.format("%n%4d%28s%15s%3.2f%30s%n", random.readInt(),
-                            readString(random, field_size),
-                            readString(random, field_size), random.readDouble(),
-                            readString(random, field_size));
-                }
-
-            } catch (IOException ex) {
-                ex.getMessage();
-            }
-
-        }
-        else{
             try {
                 RandomAccessFile random = new RandomAccessFile(file, "rw");
                 random.seek(0);
@@ -127,8 +104,6 @@ public class VehicleList extends ArrayList<Vehicle> {
             } catch (IOException ex) {
                 ex.getMessage();
             }
-        }
-
         return rs;
     }
 
@@ -149,13 +124,13 @@ public class VehicleList extends ArrayList<Vehicle> {
             ex.getMessage();
         }
     }
-    
-    public boolean checkRecord(int num) throws FileNotFoundException, IOException{
+
+    public boolean checkRecord(int num) throws FileNotFoundException, IOException {
         filePath = "vehicle.txt";
         file = new File(filePath);
-        long fileSize = RECORD_SIZE*(num);
+        long fileSize = RECORD_SIZE * (num);
         try {
-            RandomAccessFile random = new RandomAccessFile(file,"rw");
+            RandomAccessFile random = new RandomAccessFile(file, "rw");
             random.seek(fileSize);
             if (fileSize + 1 < random.length()) {
                 return true;
@@ -164,5 +139,41 @@ public class VehicleList extends ArrayList<Vehicle> {
             e.getMessage();
         }
         return false;
+    }
+
+    public void editRecord(Vehicle newItem , int num) throws FileNotFoundException, IOException {
+        filePath = "vehicle.txt";
+        file = new File(filePath);
+        RandomAccessFile random = new RandomAccessFile(file, "rw");
+        long fileSize = RECORD_SIZE * num;
+        random.seek(fileSize);
+        random.writeInt(newItem.getYear());
+            random.writeChars(prepStringField(newItem.getMake().getName(), field_size));
+            random.writeChars(prepStringField(newItem.getModel(), field_size));
+            random.writeDouble(newItem.getPrice());
+            random.writeChars(prepStringField(newItem.getColor(), field_size));
+        
+    }
+    
+    public String readFileIndex(int num) throws FileNotFoundException, IOException {
+        String rs = "";
+        filePath = "vehicle.txt";
+        file = new File(filePath);
+        long fileSize = RECORD_SIZE*num;
+            try {
+                RandomAccessFile random = new RandomAccessFile(file, "rw");
+                random.seek(fileSize);
+                while (random.getFilePointer() < random.length()) {
+
+                    rs += String.format("%n%4d%28s%15s%3.2f%30s%n", random.readInt(),
+                            readString(random, field_size),
+                            readString(random, field_size), random.readDouble(),
+                            readString(random, field_size));
+                }
+
+            } catch (IOException ex) {
+                ex.getMessage();
+            }
+        return rs;
     }
 }
