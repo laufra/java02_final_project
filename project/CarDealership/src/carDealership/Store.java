@@ -38,13 +38,12 @@ public class Store extends Application {
     TextArea txtDisplay;
     Label lblTitle, lblYear, lblMake, lblModel, lblPrice, lblColor, lblSelect;
     TextField txtYear, txtModel, txtPrice, txtColor;
-    ComboBox cbMake,cbColor;
+    ComboBox cbMake, cbColor;
     Validator yearValidator = new Validator();
     Validator priceValidator = new Validator();
     Validator stringValidator = new Validator();
     VehicleList vehicleList;
     Vehicle vehicle;
- 
 
     @Override
     public void start(Stage primaryStage) throws IOException {
@@ -72,7 +71,7 @@ public class Store extends Application {
         txtDisplay.setPrefWidth(300);
         txtDisplay.setEditable(false);
         txtDisplay.getStyleClass().add("txtDisplay");
-        lblTitle = new Label("Welcome to shitty Car Inventory");
+        lblTitle = new Label("Welcome to Car Inventory");
         lblTitle.getStyleClass().add("lblTitle");
         lblTitle.setPrefWidth(800);
         lblYear = new Label("Year: ");
@@ -96,7 +95,8 @@ public class Store extends Application {
          */
         Make[] carMake = Make.values();
         cbMake.getItems().addAll(carMake);
-        String[] colors = {"Red","Blue","White","Gray","Silver"};
+
+        String[] colors = {"Red", "Blue", "White", "Gray", "Silver"};
         cbColor.getItems().addAll(colors);
         /**
          * Assigning nodes to their boxes or panes
@@ -122,7 +122,6 @@ public class Store extends Application {
         close.setOnAction(e -> Platform.exit());
         delete.setOnAction(e -> eventCode(e));
         showInventory.setOnAction(e -> eventCode(e));
-        
 
         Scene scene = new Scene(root, 800, 800);
         scene.getStylesheets().add("styles.css");
@@ -146,7 +145,7 @@ public class Store extends Application {
                 backButton);
 
         addForm.setAlignment(Pos.CENTER);
-        
+
         submitAdd.setOnAction(e -> eventCode(e));
         backButton.setOnAction(e -> eventCode(e));
 
@@ -214,32 +213,50 @@ public class Store extends Application {
                 Optional<String> record = input.showAndWait();
                 indexNum = Integer.parseInt(record.toString());
 
-                if (record.isPresent()){ {
-                    if (!vehicleList.checkRecord(indexNum)) {
-                        txtDisplay.setText("Please enter a valid record number");
-                    } else {
-                        root.setLeft(editBox());
-                    }
+                if (record.isPresent()) {
+                    root.setLeft(editBox());
+                    vehicleList.getEditRecord(indexNum);
+                    txtYear.setText(VehicleList.year);
+                    cbMake.setId(VehicleList.make);
+                    txtModel.setText(VehicleList.model);
+                    txtPrice.setText(VehicleList.price);
+                    cbColor.setId(VehicleList.color);
 
+                } else {
+                    txtDisplay.setText("Please enter a valid record number");
                 }
+                if (e.getSource() == submitEdit) {
 
-            }
+                    vehicle = new Vehicle();
+                    vehicle.setYear(Integer.parseInt(txtYear.getText()));
+                    vehicle.setMake(Make.valueOf(cbMake.getValue().toString()));
+                    vehicle.setModel(txtModel.getText());
+                    vehicle.setPrice(Double.parseDouble(txtPrice.getText()));
+                    vehicle.setColor(txtColor.getText());
+
+                    int vehYear = vehicle.getYear();
+                    Make vehMake = vehicle.getMake();
+                    String vehModel = vehicle.getModel();
+                    double vehPrice = vehicle.getPrice();
+                    String vehColor = vehicle.getColor();
+                    vehicleList.editRecord(indexNum, vehicle);
+
+                    vehicleList.writeRecord(vehicle);
+
+                    txtDisplay.setText("Entry Saved");
+                }
             }
             if (e.getSource() == delete) {
-                TextInputDialog input = new TextInputDialog();
-                input.setTitle("Input Dialog");
-                input.setContentText("Enter Record number to delete");
-
-                Optional<String> record = input.showAndWait();
-      
-                if (record.isPresent()) {
-                    indexNum = Integer.parseInt(record.get());
-                    vehicleList.deleteRecord(indexNum);
-                    
-                    
-                    
+                Alert alert = new Alert(Alert.AlertType.CONFIRMATION,
+                        "Are you sure you wish to delete last entry?", 
+                        ButtonType.YES, ButtonType.NO);
+                alert.setTitle("Delete Record");
+                alert.setHeaderText(null);
+                Optional<ButtonType> result = alert.showAndWait();
+                if (result.get() == ButtonType.YES) {
+                    vehicleList.deleteRecord();
                 }
-                
+
             }
             if (e.getSource() == submitSearch) {
                 //TO DO
@@ -261,14 +278,12 @@ public class Store extends Application {
                     lblModel.setTextFill(Color.BLACK);
                     txtDisplay.setText("Invalid price");
                     lblPrice.setTextFill(Color.RED);
-                } else if (cbColor.getSelectionModel().getSelectedIndex() == -1)
-                {
+                } else if (cbColor.getSelectionModel().getSelectedIndex() == -1) {
                     lblPrice.setTextFill(Color.BLACK);
                     txtDisplay.setText("Must input a color");
                     lblColor.setTextFill(Color.RED);
-                }  
-                else {
-                    
+                } else {
+
                     vehicleList = new VehicleList();
                     vehicle = new Vehicle();
                     vehicle.setYear(Integer.parseInt(txtYear.getText()));
@@ -281,55 +296,26 @@ public class Store extends Application {
                     String vehModel = vehicle.getModel();
                     double vehPrice = vehicle.getPrice();
                     String vehColor = vehicle.getColor();
-                    Vehicle veh = new Vehicle(vehYear,vehMake,vehModel,vehPrice, vehColor);
+                    Vehicle veh = new Vehicle(vehYear, vehMake, vehModel, vehPrice, vehColor);
                     vehicleList.add(veh);
                     vehicleList.writeRecord(vehicle);
-                    
+
                     txtDisplay.setText("Entry Saved");
                 }
             }
-            if (e.getSource() == submitEdit) {
-                 txtYear.setText(Integer.
-                        toString(vehicleList.get(indexNum).getYear()));
-                txtModel.setText(vehicleList.get(indexNum).getModel());
-                txtPrice.setText(Double.toString(vehicleList.
-                        get(indexNum).getPrice()));
 
-                vehicle.setYear(Integer.parseInt(txtYear.getText()));
-                vehicle.setMake(Make.valueOf(cbMake.getValue().toString()));
-                vehicle.setModel(txtModel.getText());
-                vehicle.setPrice(Double.parseDouble(txtPrice.getText()));
-                vehicle.setColor(txtColor.getText());
-
-                int vehYear = vehicle.getYear();
-                Make vehMake = vehicle.getMake();
-                String vehModel = vehicle.getModel();
-                double vehPrice = vehicle.getPrice();
-                String vehColor = vehicle.getColor();
-                vehicleList.set(indexNum, new Vehicle(vehYear, vehMake,
-                        vehModel, vehPrice, vehColor));
-
-                vehicleList.writeRecord(vehicle);
-                
-                txtDisplay.setText("Entry Saved");
-            }
             if (e.getSource() == showInventory) {
-                
-                txtDisplay.setText("Year\t" 
+
+                txtDisplay.setText("Year\t"
                         + "\tMake" + "\t\tModel" + "\t\tPrice" + "\t\t\tColor");
                 txtDisplay.appendText("\n-------------------------------------"
                         + "--------------------------------------------------");
-                
+
                 txtDisplay.appendText(vehicleList.readFile());
             }
         } catch (Exception ex) {
             ex.getMessage();
         }
-    }
-
-    
-    public void save() {
-
     }
 
 }
