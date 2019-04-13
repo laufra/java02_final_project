@@ -5,7 +5,9 @@
  */
 package carDealership;
 
+import java.io.File;
 import java.io.IOException;
+import java.io.RandomAccessFile;
 import java.util.Optional;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -216,7 +218,18 @@ public class Store extends Application {
                 Optional<String> result = input.showAndWait();
                 if (result.isPresent() && vehicleList.checkRecord(Integer.parseInt(result.get()))) {
                     root.setLeft(editBox());
-                    
+                    String filePath = "vehicle.txt";
+                    File file = new File(filePath);
+                    RandomAccessFile random = new RandomAccessFile(file,"rw");
+                    int recNum = Integer.parseInt(result.get());
+                    if (recNum >= 0 && recNum < random.length() / VehicleList.RECORD_SIZE) {
+                    random.seek(VehicleList.RECORD_SIZE * recNum);
+                    txtYear.setText(Integer.toString(random.readInt()));
+                    cbMake.setValue(vehicleList.readString(random, VehicleList.field_size));
+                    txtModel.setText(vehicleList.readString(random, VehicleList.field_size));
+                    txtPrice.setText(Double.toString(random.readDouble()));
+                    cbColor.setValue(vehicleList.readString(random, VehicleList.field_size));
+                } 
                 }
                 
 
