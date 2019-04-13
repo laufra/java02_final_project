@@ -34,6 +34,7 @@ public class VehicleList extends ArrayList<Vehicle> {
     //int String string double string
     public static final int RECORD_SIZE = 132;
     private String filePath = "";
+    private String copyPath = "";
     public String year;
     public String make;
     public String model;
@@ -75,21 +76,42 @@ public class VehicleList extends ArrayList<Vehicle> {
         String rs = "";
         filePath = "vehicle.txt";
         file = new File(filePath);
-        try {
-            RandomAccessFile random = new RandomAccessFile(file, "rw");
-            random.seek(0);
-            while (random.getFilePointer() < random.length()) {
+        copyPath = "copy.txt";
+        File copy = new File(copyPath, "rw");
+        if (copy.exists()) {
+            try {
+                RandomAccessFile random = new RandomAccessFile(copy, "rw");
+                random.seek(0);
+                while (random.getFilePointer() < random.length()) {
 
-                rs += String.format("%n%4d%28s%15s%3.2f%30s%n", random.readInt(),
-                        readString(random, field_size),
-                        readString(random, field_size), random.readDouble(),
-                        readString(random, field_size));
+                    rs += String.format("%n%4d%28s%15s%3.2f%30s%n", random.readInt(),
+                            readString(random, field_size),
+                            readString(random, field_size), random.readDouble(),
+                            readString(random, field_size));
+                }
 
+            } catch (IOException ex) {
+                ex.getMessage();
             }
 
-        } catch (IOException ex) {
-            ex.getMessage();
         }
+        else{
+            try {
+                RandomAccessFile random = new RandomAccessFile(file, "rw");
+                random.seek(0);
+                while (random.getFilePointer() < random.length()) {
+
+                    rs += String.format("%n%4d%28s%15s%3.2f%30s%n", random.readInt(),
+                            readString(random, field_size),
+                            readString(random, field_size), random.readDouble(),
+                            readString(random, field_size));
+                }
+
+            } catch (IOException ex) {
+                ex.getMessage();
+            }
+        }
+
         return rs;
     }
 
@@ -116,20 +138,22 @@ public class VehicleList extends ArrayList<Vehicle> {
         file = new File(filePath);
         long fileSize = RECORD_SIZE * (num - 1);
         try {
-            String rs = "";
             RandomAccessFile random = new RandomAccessFile(file, "rw");
+            File copy = new File("copy.txt");
+            RandomAccessFile copyFile = new RandomAccessFile(copy, "rw");
             if (num == 0) {
                 random.seek(132);
-                while (random.getFilePointer() < random.length()) {
-
-                    rs += String.format("%n%4d%28s%15s%3.2f%30s%n", random.readInt(),
-                            readString(random, field_size),
-                            readString(random, field_size), random.readDouble(),
-                            readString(random, field_size));
+                for (int i = 132; i < random.length(); i++) {
+                    copyFile.write(random.read());
                 }
+                filePath = "copy.txt";
+
             } else {
                 random.seek(fileSize);
-                
+                for (int i = (int) fileSize; i < random.length(); i++) {
+                    copyFile.write(random.read());
+                }
+                filePath = "copy.txt";
             }
 
         } catch (IOException ex) {
@@ -137,7 +161,8 @@ public class VehicleList extends ArrayList<Vehicle> {
         }
 
     }
-    public void getEditRecord(int num){
+
+    public void getEditRecord(int num) {
         filePath = "vehicle.txt";
         file = new File(filePath);
         long fileSize = RECORD_SIZE * (num - 1);
@@ -150,7 +175,7 @@ public class VehicleList extends ArrayList<Vehicle> {
             model = this.readString(random, field_size);
             price = "" + random.readDouble();
             color = this.readString(random, field_size);
-            
+
         } catch (Exception e) {
         }
     }
@@ -164,9 +189,8 @@ public class VehicleList extends ArrayList<Vehicle> {
             if (num == 0) {
                 random.seek(132);
                 this.writeRecord(vehicle);
-            }
-            else{
-                
+            } else {
+
             }
         } catch (IOException ex) {
             ex.getMessage();
