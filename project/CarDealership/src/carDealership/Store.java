@@ -17,6 +17,7 @@ import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
+import javafx.scene.control.Alert.AlertType;
 import javafx.scene.layout.*;
 import javafx.scene.paint.Color;
 import javafx.stage.Stage;
@@ -179,6 +180,7 @@ public class Store extends Application {
                 txtModel, lblPrice, txtPrice, lblColor, cbColor, submitEdit,
                 backButton);
         editForm.setAlignment(Pos.CENTER);
+        submitEdit.setOnAction(e -> eventCode(e));
         backButton.setOnAction(e -> eventCode(e));
         return editForm;
 
@@ -208,47 +210,24 @@ public class Store extends Application {
             if (e.getSource() == edit) {
                 TextInputDialog input = new TextInputDialog();
                 input.setTitle("Input Dialog");
-                input.setContentText("Enter Record number to edit");
+                input.setHeaderText(null);
+                input.setContentText("Enter record number:");
 
-                Optional<String> record = input.showAndWait();
-                indexNum = Integer.parseInt(record.toString());
-
-                if (record.isPresent()) {
+                Optional<String> result = input.showAndWait();
+                if (result.isPresent() && vehicleList.checkRecord(Integer.parseInt(result.get()))) {
                     root.setLeft(editBox());
-                    vehicleList.getEditRecord(indexNum);
-                    txtYear.setText(VehicleList.year);
-                    cbMake.setId(VehicleList.make);
-                    txtModel.setText(VehicleList.model);
-                    txtPrice.setText(VehicleList.price);
-                    cbColor.setId(VehicleList.color);
-
-                } else {
-                    txtDisplay.setText("Please enter a valid record number");
+                    
                 }
-                if (e.getSource() == submitEdit) {
+                
 
-                    vehicle = new Vehicle();
-                    vehicle.setYear(Integer.parseInt(txtYear.getText()));
-                    vehicle.setMake(Make.valueOf(cbMake.getValue().toString()));
-                    vehicle.setModel(txtModel.getText());
-                    vehicle.setPrice(Double.parseDouble(txtPrice.getText()));
-                    vehicle.setColor(txtColor.getText());
+            }
 
-                    int vehYear = vehicle.getYear();
-                    Make vehMake = vehicle.getMake();
-                    String vehModel = vehicle.getModel();
-                    double vehPrice = vehicle.getPrice();
-                    String vehColor = vehicle.getColor();
-                    vehicleList.editRecord(indexNum, vehicle);
+            if (e.getSource() == submitEdit) {
 
-                    vehicleList.writeRecord(vehicle);
-
-                    txtDisplay.setText("Entry Saved");
-                }
             }
             if (e.getSource() == delete) {
                 Alert alert = new Alert(Alert.AlertType.CONFIRMATION,
-                        "Are you sure you wish to delete last entry?", 
+                        "Are you sure you wish to delete last entry?",
                         ButtonType.YES, ButtonType.NO);
                 alert.setTitle("Delete Record");
                 alert.setHeaderText(null);

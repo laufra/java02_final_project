@@ -67,43 +67,7 @@ public class VehicleList extends ArrayList<Vehicle> {
         }
 
     }
-
-    public void getEditRecord(int num) {
-        filePath = "vehicle.txt";
-        file = new File(filePath);
-        long fileSize = RECORD_SIZE * (num - 1);
-        try {
-            RandomAccessFile random = new RandomAccessFile(file, "rw");
-            random.seek(fileSize);
-            random.setLength(fileSize + 132);
-            year = "" + random.readInt();
-            make = this.readString(random, field_size);
-            model = this.readString(random, field_size);
-            price = "" + random.readDouble();
-            color = this.readString(random, field_size);
-
-        } catch (Exception e) {
-            e.getMessage();
-        }
-    }
-
-    public void editRecord(int num, Vehicle vehicle) {
-        filePath = "vehicle.txt";
-        file = new File(filePath);
-        long fileSize = RECORD_SIZE * (num - 1);
-        try {
-            RandomAccessFile random = new RandomAccessFile(file, "rw");
-            if (num == 0) {
-                random.seek(132);
-                this.writeRecord(vehicle);
-            } else {
-                random.seek(fileSize);
-                this.writeRecord(vehicle);
-            }
-        } catch (IOException ex) {
-            ex.getMessage();
-        }
-    }
+    
     
     public String readString(RandomAccessFile random, int size) throws java.io.IOException {
         String n = "";
@@ -184,5 +148,21 @@ public class VehicleList extends ArrayList<Vehicle> {
         } catch (IOException ex) {
             ex.getMessage();
         }
+    }
+    
+    public boolean checkRecord(int num) throws FileNotFoundException, IOException{
+        filePath = "vehicle.txt";
+        file = new File(filePath);
+        long fileSize = RECORD_SIZE*(num);
+        try {
+            RandomAccessFile random = new RandomAccessFile(file,"rw");
+            random.seek(fileSize);
+            if (fileSize + 1 < random.length()) {
+                return true;
+            }
+        } catch (Exception e) {
+            e.getMessage();
+        }
+        return false;
     }
 }
