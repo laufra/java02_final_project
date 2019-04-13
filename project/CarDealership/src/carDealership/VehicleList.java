@@ -33,6 +33,12 @@ public class VehicleList extends ArrayList<Vehicle> {
     public static final int field_size = 20;
     //int String string double string
     public static final int RECORD_SIZE = 132;
+    private String filePath = "";
+    public String year;
+    public String make;
+    public String model;
+    public String price;
+    public String color;
 
     public VehicleList() throws FileNotFoundException, IOException {
         file = new File("vehicle.txt");
@@ -67,7 +73,8 @@ public class VehicleList extends ArrayList<Vehicle> {
 
     public String readFile() throws FileNotFoundException, IOException {
         String rs = "";
-        file = new File("vehicle.txt");
+        filePath = "vehicle.txt";
+        file = new File(filePath);
         try {
             RandomAccessFile random = new RandomAccessFile(file, "rw");
             random.seek(0);
@@ -80,7 +87,6 @@ public class VehicleList extends ArrayList<Vehicle> {
 
             }
 
-
         } catch (IOException ex) {
             ex.getMessage();
         }
@@ -89,29 +95,81 @@ public class VehicleList extends ArrayList<Vehicle> {
 
     public void writeRecord(Vehicle newItem) throws FileNotFoundException, IOException {
         try {
-            file = new File("vehicle.txt");
+            filePath = "vehicle.txt";
+            file = new File(filePath);
             RandomAccessFile random = new RandomAccessFile(file, "rw");
             long fileSize = random.length();
             random.seek(fileSize);
             random.writeInt(newItem.getYear());
-            random.writeChars(prepStringField(newItem.getMake().getName(),field_size));
-            random.writeChars(prepStringField(newItem.getModel(),field_size));
+            random.writeChars(prepStringField(newItem.getMake().getName(), field_size));
+            random.writeChars(prepStringField(newItem.getModel(), field_size));
             random.writeDouble(newItem.getPrice());
-            random.writeChars(prepStringField(newItem.getColor(),field_size));
-            
+            random.writeChars(prepStringField(newItem.getColor(), field_size));
+
         } catch (IOException ex) {
             ex.getMessage();
         }
     }
-    
-    public void deleteRecord(int num) throws FileNotFoundException, IOException{
-        file = new File("vehicle.txt");
-        RandomAccessFile random = new RandomAccessFile(file,"rw");
-        long fileSize = RECORD_SIZE *(num - 1);
-        random.seek(fileSize);
-        random.setLength();
-        
+
+    public void deleteRecord(int num) throws FileNotFoundException, IOException {
+        filePath = "vehicle.txt";
+        file = new File(filePath);
+        long fileSize = RECORD_SIZE * (num - 1);
+        try {
+            String rs = "";
+            RandomAccessFile random = new RandomAccessFile(file, "rw");
+            if (num == 0) {
+                random.seek(132);
+                while (random.getFilePointer() < random.length()) {
+
+                    rs += String.format("%n%4d%28s%15s%3.2f%30s%n", random.readInt(),
+                            readString(random, field_size),
+                            readString(random, field_size), random.readDouble(),
+                            readString(random, field_size));
+                }
+            } else {
+                random.seek(fileSize);
+                
+            }
+
+        } catch (IOException ex) {
+            ex.getMessage();
+        }
+
+    }
+    public void getEditRecord(int num){
+        filePath = "vehicle.txt";
+        file = new File(filePath);
+        long fileSize = RECORD_SIZE * (num - 1);
+        try {
+            RandomAccessFile random = new RandomAccessFile(file, "rw");
+            random.seek(fileSize);
+            random.setLength(fileSize + 132);
+            year = "" + random.readInt();
+            make = this.readString(random, field_size);
+            model = this.readString(random, field_size);
+            price = "" + random.readDouble();
+            color = this.readString(random, field_size);
+            
+        } catch (Exception e) {
+        }
     }
 
-
+    public void editRecord(int num, Vehicle vehicle) {
+        filePath = "vehicle.txt";
+        file = new File(filePath);
+        long fileSize = RECORD_SIZE * (num - 1);
+        try {
+            RandomAccessFile random = new RandomAccessFile(file, "rw");
+            if (num == 0) {
+                random.seek(132);
+                this.writeRecord(vehicle);
+            }
+            else{
+                
+            }
+        } catch (IOException ex) {
+            ex.getMessage();
+        }
+    }
 }
