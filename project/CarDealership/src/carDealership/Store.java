@@ -269,23 +269,61 @@ public class Store extends Application {
 
                 Vehicle newVehicle = new Vehicle();
                 newVehicle.setYear(Integer.parseInt(txtYear.getText()));
-
-                newVehicle.setMake(Make.valueOf(cbMake.getValue().toString()));
-
-                newVehicle.setModel(txtModel.getText());
-
-                newVehicle.setPrice(Double.parseDouble(txtPrice.getText()));
-
-                newVehicle.setColor(cbColor.getValue().toString());
-
                 int vehYear = newVehicle.getYear();
+                String tempMake = cbMake.getValue().toString();
+                switch (tempMake) {
+                    case "Toyota":
+                        newVehicle.setMake(Make.Toyota);
+                        break;
+                    case "Honda":
+                        newVehicle.setMake(Make.Honda);
+                        break;
+                    case "Audi":
+                        newVehicle.setMake(Make.Audi);
+                        break;
+                    case "BMW":
+                        newVehicle.setMake(Make.BMW);
+                        break;
+                    case "Tesla":
+                        newVehicle.setMake(Make.Tesla);
+                        break;
+                    case "Mazda":
+                        newVehicle.setMake(Make.Mazda);
+                        break;
+                    case "Hyundai":
+                        newVehicle.setMake(Make.Hyundai);
+                        break;
+                    case "Nissan":
+                        newVehicle.setMake(Make.Nissan);
+                        break;
+                    case "Ford":
+                        newVehicle.setMake(Make.Ford);
+                        break;
+                    case "MercedesBenz":
+                        newVehicle.setMake(Make.MercedesBenz);
+                        break;
+                    case "Chevrolet":
+                        newVehicle.setMake(Make.Chevrolet);
+                        break;
+                    case "VolksWagen":
+                        newVehicle.setMake(Make.Volkswagen);
+                        break;
+                    case "Subaru":
+                        newVehicle.setMake(Make.Subaru);
+                        break;
+
+                }
+                newVehicle.setModel(txtModel.getText());
+                newVehicle.setPrice(Double.parseDouble(txtPrice.getText()));
+                newVehicle.setColor(cbColor.getValue().toString());
+                
                 Make vehMake = newVehicle.getMake();
                 String vehModel = newVehicle.getModel();
                 double vehPrice = newVehicle.getPrice();
                 String vehColor = newVehicle.getColor();
 
-                txtDisplay.setText("Entry saved");
-
+                vehicleList.editRecord(newVehicle, recNum);
+                txtDisplay.setText("Entry Saved");
             }
 
             if (e.getSource() == delete) {
